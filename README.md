@@ -1,3 +1,4 @@
+fRONTEND:     http://localhost:5174/
 📝 Prompt: Build a Real-Time “Watch Together” App with pnpm, Vite, and Tailwind
 Create a real-time "Watch Together" web application that allows two users to watch a YouTube video in sync, using WebRTC for peer-to-peer communication.
 
