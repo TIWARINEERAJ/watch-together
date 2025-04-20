@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socket.IO Test</title>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+</head>
+<body>
+  <h1>Socket.IO Test</h1>
+  <div>
+    <button id="createRoomBtn">Create Room</button>
+    <div>
+      <input id="roomInput" placeholder="Room ID">
+      <button id="joinRoomBtn">Join Room</button>
+    </div>
+  </div>
+  <div id="status">Status: Disconnected</div>
+  <div id="log" style="margin-top: 20px; border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: auto;"></div>
+
+  <script>
+    const log = (msg) => {
+      const logEl = document.getElementById('log');
+      const entry = document.createElement('div');
+      entry.textContent = `${new Date().toLocaleTimeString()}: ${msg}`;
+      logEl.appendChild(entry);
+      logEl.scrollTop = logEl.scrollHeight;
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const socket = io('http://localhost:3010');
+      
+      socket.on('connect', () => {
+        document.getElementById('status').textContent = `Status: Connected (${socket.id})`;
+        log('Connected to server');
+      });
+      
+      socket.on('disconnect', () => {
+        document.getElementById('status').textContent = 'Status: Disconnected';
+        log('Disconnected from server');
+      });
+      
+      socket.on('room-created', (roomId) => {
+        log(`Room created: ${roomId}`);
+        document.getElementById('roomInput').value = roomId;
+      });
+      
+      socket.on('room-joined', () => {
+        log('Room joined');
+      });
+      
+      socket.on('peer-joined', () => {
+        log('Peer joined');
+      });
+      
+      socket.on('peer-left', () => {
+        log('Peer left');
+      });
+      
+      socket.on('error', (err) => {
+        log(`Error: ${err.message}`);
+      });
+      
+      document.getElementById('createRoomBtn').addEventListener('click', () => {
+        log('Creating room...');
+        socket.emit('create-room');
+      });
+      
+      document.getElementById('joinRoomBtn').addEventListener('click', () => {
+        const roomId = document.getElementById('roomInput').value;
+        if (roomId) {
+          log(`Joining room ${roomId}...`);
+          socket.emit('join-room', roomId);
+        } else {
+          log('Please enter a room ID');
+        }
+      });
+    });
+  </script>
+</body>
+</html> 
